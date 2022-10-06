@@ -35,6 +35,11 @@
           )
           }}
 
+    - set_stats:
+        data:
+          repo: "{{ repo }}"
+          url: "{{ latest_we_care_about.html_url }}"
+
     - name: Ensure that the latest job was successful
       assert:
         that:
@@ -42,8 +47,3 @@
         fail_msg: "Job conclusion was {{ conclusion }}, not success"
       vars:
         conclusion: "{{ latest_we_care_about.conclusion }}"
-
-    - set_stats:
-        data:
-          repo: "{{ repo }}"
-          url: "{{ latest_we_care_about.html_url }}"
