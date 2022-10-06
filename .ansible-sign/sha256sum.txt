@@ -1,0 +1,3 @@
+55c2c523b8f600d6f30b33136900d8383bbd19d560feb00cc2e577d4b2559127  MANIFEST.in
+aabddbea5e064fea58abf93fb9894d78214fab73ee19c728043af188e1fce715  check-awx-image-build-failures.yml
+9b759ae07faa90bd67e40c4a9b4493919c8d8fe7915dd9df8192869e6bf8d58f  inventory
