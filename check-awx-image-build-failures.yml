@@ -1,0 +1,44 @@
+---
+# Expected variables:
+# repo: username/reponame
+# workflow_yml: foo.yml
+# branch(?): devel
+# event(?): push
+- hosts: localhost
+  tasks:
+    - name: Ask GitHub API about recent scheduled runs for {{ repo }}
+      ansible.builtin.uri:
+        url: "{{ filtered_url }}"
+      vars:
+        url: "https://api.github.com/repos/{{ repo }}/actions/workflows/{{ workflow_yml }}/runs"
+        filtered_url: "{{ url if branch is not defined or not branch else url + '?branch=' + branch }}"
+      register: response
+
+    - name: Check that the response is valid
+      assert:
+        quiet: true
+        that:
+          - response.status == 200
+          - response.json is defined
+
+    - set_fact:
+        latest_we_care_about: >-
+          {{
+          (response.json.workflow_runs
+          | selectattr(
+              'event',
+              'equalto',
+              event if event is defined else 'schedule')
+          | selectattr('status', 'equalto', 'completed')
+          | rejectattr('conclusion', 'equalto', 'cancelled')
+          | first
+          )
+          }}
+
+    - name: Ensure that the latest job was successful
+      assert:
+        that:
+          - conclusion == "success"
+        fail_msg: "Job conclusion was {{ conclusion }}, not success"
+      vars:
+        conclusion: "{{ latest_we_care_about.conclusion }}"
