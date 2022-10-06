@@ -6,10 +6,6 @@
 # event(?): push
 - hosts: localhost
   tasks:
-    - set_stats:
-        data:
-          repo: "{{ repo }}"
-
     - name: Ask GitHub API about recent scheduled runs for {{ repo }}
       ansible.builtin.uri:
         url: "{{ filtered_url }}"
@@ -46,3 +42,8 @@
         fail_msg: "Job conclusion was {{ conclusion }}, not success"
       vars:
         conclusion: "{{ latest_we_care_about.conclusion }}"
+
+    - set_stats:
+        data:
+          repo: "{{ repo }}"
+          url: "{{ latest_we_care_about.html_url }}"
