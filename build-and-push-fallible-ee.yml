@@ -1,0 +1,65 @@
+---
+# Expected variables:
+# quay_robot_user
+# quay_robot_password
+- hosts: localhost
+  tasks:
+    - block:
+      - name: Get fallible version from PyPI
+        ansible.builtin.uri:
+          url: https://pypi.org/pypi/fallible/json
+        register:
+          latest_fallible: ..json.info.version
+
+      - name: Pull awx-ee-fallible tags from quay.io
+        ansible.builtin.uri:
+          url: https://quay.io/api/v1/repository/relrod/awx-ee-fallible/tag/
+        register:
+          tagged_versions: ..json.tags | map(attribute='name') | unique
+
+      - name: See if we need to do anything
+        meta: end_play
+        when: latest_fallible in tagged_versions
+
+      - name: Create tmpdir
+        ansible.builtin.tempfile:
+          state: directory
+        register:
+          tmpdir: ..path
+
+      - name: Clone the repo
+        ansible.builtin.git:
+          repo: https://github.com/relrod/awx-ee
+          version: fallible
+          dest: "{{ tmpdir }}"
+
+      - name: Build the image
+        containers.podman.podman_image:
+          name: quay.io/relrod/awx-ee-fallible
+          tag: "{{ latest_fallible }}"
+          path: "{{ tmpdir }}"
+          push: true
+          state: build
+          username: "{{ quay_robot_user }}"
+          password: "{{ quay_robot_password }}"
+
+      - name: Tag latest, too
+        containers.podman.podman_tag:
+          image: quay.io/relrod/awx-ee-fallible
+          target_names:
+            - latest
+
+      - name: Push the latest tag
+        containers.podman.podman_image:
+          name: quay.io/relrod/awx-ee-fallible:{{ latest_fallible }}
+          tag: latest
+          push: true
+          state: present
+          username: "{{ quay_robot_user }}"
+          password: "{{ quay_robot_password }}"
+
+      always:
+        - name: Remove temp directory
+          ansible.builtin.file:
+            path: "{{ tmpdir }}"
+          when: tmpdir is defined
