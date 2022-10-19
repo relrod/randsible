@@ -47,7 +47,7 @@
 
       - name: Tag latest, too
         containers.podman.podman_tag:
-          image: quay.io/relrod/awx-ee-fallible
+          image: quay.io/relrod/awx-ee-fallible:{{ latest_fallible }}
           target_names:
             - latest
 
