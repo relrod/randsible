@@ -49,14 +49,14 @@
         containers.podman.podman_tag:
           image: quay.io/relrod/awx-ee-fallible:{{ latest_fallible }}
           target_names:
-            - latest
+            - quay.io/relrod/awx-ee-fallible:latest
 
       - name: Push the latest tag
         containers.podman.podman_image:
-          name: quay.io/relrod/awx-ee-fallible:{{ latest_fallible }}
+          name: quay.io/relrod/awx-ee-fallible
           tag: latest
           push: true
-          state: present
+          pull: false
           username: "{{ quay_robot_user }}"
           password: "{{ quay_robot_password }}"
 
