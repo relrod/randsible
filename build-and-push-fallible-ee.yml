@@ -19,7 +19,9 @@
 
       - name: See if we need to do anything
         meta: end_play
-        when: latest_fallible in tagged_versions
+        when:
+          - force_build is not defined or not force_build
+          - latest_fallible in tagged_versions
 
       - name: Create tmpdir
         ansible.builtin.tempfile:
