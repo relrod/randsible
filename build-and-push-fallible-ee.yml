@@ -20,7 +20,7 @@
       - name: See if we need to do anything
         meta: end_play
         when:
-          - force_build is not defined or not force_build
+          - force_build is not defined or not (force_build|bool)
           - latest_fallible in tagged_versions
 
       - name: Create tmpdir
