@@ -44,6 +44,8 @@
           state: build
           username: "{{ quay_robot_user }}"
           password: "{{ quay_robot_password }}"
+          build:
+            extra_args: --security-opt seccomp=unconfined --cap-add all 
         environment:
           STORAGE_DRIVER: vfs
 
