@@ -44,6 +44,8 @@
           state: build
           username: "{{ quay_robot_user }}"
           password: "{{ quay_robot_password }}"
+        environment:
+          STORAGE_DRIVER: vfs
 
       - name: Tag latest, too
         containers.podman.podman_tag:
