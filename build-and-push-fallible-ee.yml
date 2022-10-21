@@ -45,8 +45,7 @@
           username: "{{ quay_robot_user }}"
           password: "{{ quay_robot_password }}"
           build:
-            volume:
-              - "/proc:/proc"
+            extra_args: --security-opt seccomp=unconfined --cap-add all --isolation=chroot
         environment:
           STORAGE_DRIVER: vfs
 
