@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  tasks:
+    - community.general.discord:
+        webhook_id: 1164920096469291048
+        webhook_token: HVDGaGGF32mxI8Tjv0Ll2y2QDQmY9tysKcJ3P8_CkDGGyCyFUT1G1H1oUPI5NxseoQs5
+        content: "<@841401624982454293> any updates on dagdcon dates yet?"
